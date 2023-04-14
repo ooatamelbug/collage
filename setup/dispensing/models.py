@@ -7,8 +7,8 @@ from stock.models import StoreStock
 
 class Dispensing(models.Model):
     id= models.AutoField(primary_key=True)
-    user_id = models.ForeignKey(User, related_name='user', on_delete=models.CASCADE)
-    store_id = models.ForeignKey(Store, related_name='store', on_delete=models.CASCADE)
+    user_id = models.ForeignKey(User, related_name='user_dispensing', on_delete=models.CASCADE)
+    store_id = models.ForeignKey(Store, related_name='store_dispensing', on_delete=models.CASCADE)
     total_price= models.FloatField(default=0.0)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
@@ -20,8 +20,8 @@ class SoldDrug(models.Model):
     id= models.AutoField(primary_key=True)
     sold_quantity= models.IntegerField()
     sell_price= models.FloatField(default=0.0)
-    dispensing_id= models.ForeignKey(Dispensing, related_name='dispensing', on_delete=models.CASCADE)
-    store_stock_id= models.ForeignKey(StoreStock, related_name='store_stock', on_delete=models.CASCADE)
+    dispensing_id= models.ForeignKey(Dispensing, related_name='dispensing_drug', on_delete=models.CASCADE)
+    store_stock_id= models.ForeignKey(StoreStock, related_name='store_stock_drug', on_delete=models.CASCADE)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     

@@ -9,7 +9,7 @@ class Stock(models.Model):
     stock_quantity= models.IntegerField()
     const_price= models.FloatField()
     selling_price=models.FloatField()
-    durg_id= models.ForeignKey(Drug, related_name='drug' ,on_delete=models.CASCADE)
+    durg_id= models.ForeignKey(Drug, related_name='drug_stock' ,on_delete=models.CASCADE)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     
@@ -21,9 +21,9 @@ class Stock(models.Model):
 class StoreStock(models.Model):
     id=models.AutoField(primary_key=True)
     store_quantity= models.IntegerField()
-    store_id = models.ForeignKey(Store, related_name='store', on_delete=models.CASCADE)
-    stock_id = models.ForeignKey(Stock, related_name='stock', on_delete=models.CASCADE)
-    drug_id = models.ForeignKey(Drug, related_name='drug', on_delete=models.CASCADE)
+    store_id = models.ForeignKey(Store, related_name='store_stock_relation', on_delete=models.CASCADE)
+    stock_id = models.ForeignKey(Stock, related_name='stock_stock_relation', on_delete=models.CASCADE)
+    drug_id = models.ForeignKey(Drug, related_name='drug_stock_relation', on_delete=models.CASCADE)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     

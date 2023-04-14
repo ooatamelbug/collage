@@ -20,8 +20,8 @@ class Responsibilities(models.Model):
 
 class UserResponsibilities(models.Model):
     id=models.AutoField(primary_key=True)
-    user_id= models.ForeignKey(User,related_name='user', on_delete=models.CASCADE)
-    resp_id= models.ForeignKey(Responsibilities, related_name= 'responsibilities', on_delete=models.CASCADE)    
+    user_id= models.ForeignKey(User,related_name='user_responsibilities', on_delete=models.CASCADE)
+    resp_id= models.ForeignKey(Responsibilities, related_name= 'responsibilities_user', on_delete=models.CASCADE)    
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     status= models.BooleanField(default=True)

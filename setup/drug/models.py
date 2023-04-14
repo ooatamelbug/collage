@@ -23,7 +23,7 @@ class Drug(models.Model):
     main_uom= models.CharField(max_length=25)
     small_uom= models.CharField(max_length=25)
     drug_status= models.BooleanField(default=True)
-    class_id= models.ForeignKey(Classes, related_name= 'class', on_delete=models.CASCADE)
+    class_id= models.ForeignKey(Classes, related_name= 'class_drug', on_delete=models.CASCADE)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
 

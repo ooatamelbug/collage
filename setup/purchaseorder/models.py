@@ -8,6 +8,6 @@ class PurchaseOrder(models.Model):
     invoice_number=models.IntegerField()
     invoice_status = models.IntegerField(default=0)
     invoice_atm=models.IntegerField()
-    supplier_id=models.ForeignKey(Supplier, on_delete=models.CASCADE)
+    supplier_id=models.ForeignKey(Supplier, related_name= 'supplier_order', on_delete=models.CASCADE)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
