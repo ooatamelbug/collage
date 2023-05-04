@@ -14,7 +14,7 @@ from responsibilities import serializers, models
 class ClassesApi(APIView):
     permission_classes = [IsAuthenticated]
     def createClasses(request):
-        class_name = request.body.class_name
+        class_name = request.data.class_name
         serializer = ClassesSerializers(data={ class_name })
         if serializer.is_valid():
             serializer.save()
@@ -25,11 +25,11 @@ class ClassesApi(APIView):
 
 class DrugApi(APIView):
     permission_classes = [IsAuthenticated]
-    def searchDrugApi(request):
-        en_brand_name = request.body.en_brand_name
-        ar_brand_name = request.body.en_brand_name
-        national_code = request.body.national_code
-        class_id = request.body.class_id
+    def post(request):
+        en_brand_name = request.data.en_brand_name
+        ar_brand_name = request.data.en_brand_name
+        national_code = request.data.national_code
+        class_id = request.data.class_id
         data = Drug.objects.all()
         if en_brand_name:
             data = Drug.objects.filter(en_brand_name=en_brand_name)

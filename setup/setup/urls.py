@@ -15,13 +15,15 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
-from auth import urls as authMoule
-from users import urls as userMoule
-from drug import urls as drugMoule
+from auth import urls as authModule
+from users import urls as userModule
+from drug import urls as drugModule
+from dispensing import urls as dispensingModule
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('api/auth/', include(authMoule)),
-    path('api/user/', include(userMoule)),
-    path('api/drug/', include(drugMoule))
+    path('api/auth/', include(authModule)),
+    path('api/user/', include(userModule)),
+    path('api/drug/', include(drugModule)),
+    path('api/dispensing/', include(dispensingModule))
 ]

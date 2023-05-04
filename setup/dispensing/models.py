@@ -2,6 +2,7 @@ from django.db import models
 from users.models import User
 from store.models import Store
 from stock.models import StoreStock
+from drug.models import Drug
 # Create your models here.
 
 
@@ -22,6 +23,7 @@ class SoldDrug(models.Model):
     sell_price= models.FloatField(default=0.0)
     dispensing_id= models.ForeignKey(Dispensing, related_name='dispensing_drug', on_delete=models.CASCADE)
     store_stock_id= models.ForeignKey(StoreStock, related_name='store_stock_drug', on_delete=models.CASCADE)
+    drug_id= models.ForeignKey(Drug, related_name='drug_sold_drug', on_delete=models.CASCADE, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
     
