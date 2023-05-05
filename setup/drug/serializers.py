@@ -13,3 +13,4 @@ class DrugSerializers(serializers.ModelSerializer):
     class Meta:
         model= Drug
         fields= '__all__'
+        extra_fields = ['store']
