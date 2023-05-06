@@ -29,6 +29,6 @@ class StoreStock(models.Model):
     
 
     def __str__(self):
-        return self.store_quantity
+        return self.drug_id + " have " + self.store_quantity
 
     
