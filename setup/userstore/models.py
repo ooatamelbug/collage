@@ -12,4 +12,4 @@ class UserStore(models.Model):
     updated_at=models.DateTimeField(auto_now=True)
     
     def __str__(self):
-        return self.store_id + " work in " +self.user_id
+        return str(self.store_id) + " work in " + str(self.user_id)

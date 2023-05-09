@@ -19,11 +19,13 @@ from auth import urls as authModule
 from users import urls as userModule
 from drug import urls as drugModule
 from dispensing import urls as dispensingModule
+from stock import urls as stockModule
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('api/auth/', include(authModule)),
     path('api/user/', include(userModule)),
     path('api/drug/', include(drugModule)),
-    path('api/dispensing/', include(dispensingModule))
+    path('api/dispensing/', include(dispensingModule)), 
+    path('api/stock/', include(stockModule)),
 ]

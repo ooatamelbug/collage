@@ -16,6 +16,7 @@ class DispensingApi(APIView):
 
     def get(self, request, *args, **kwargs):
         id = kwargs.get('id')
+        print(id)
         if id is None:
             dispensing = Dispensing.objects.all()
             serilizer = DispensingSerializers(data=dispensing)
