@@ -6,14 +6,15 @@ from .models import Dispensing, SoldDrug
 class CreateDispensingSerializers(serializers.ModelSerializer):
     class Meta:
         model = Dispensing
-        fields = ('user_id', 'total_price', 'store_id')
+        fields = ('user_id', 'total_price', 'store_id', 'id')
 
 
 class SoldDrugSerializers(serializers.ModelSerializer):
+    drug: serializers.CharField(source="drug_stock_relation.en_brand_name")
     class Meta:
         model = SoldDrug
         fields = '__all__'
-
+        depth= 1
 
 class CreateSoldDrugSerializers(serializers.ModelSerializer):
     class Meta:
@@ -23,8 +24,8 @@ class CreateSoldDrugSerializers(serializers.ModelSerializer):
 
 
 class DispensingSerializers(serializers.ModelSerializer):
-    dispensing_drug_set = SoldDrugSerializers(many=True)
+    dispensing_drug = SoldDrugSerializers(many=True)
 
     class Meta:
         model = Dispensing
-        fields = ('id', 'dispensing_drug_set', 'user_id', 'store_id', 'total_price')
+        fields = '__all__'
