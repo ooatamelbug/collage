@@ -14,20 +14,22 @@ class DispensingApi(APIView):
     permission_classes = [IsAuthenticated]
     http_method_names = ['post', 'get']
 
-    def get(self, request, *args, **kwargs):
-        id = kwargs.get('id')
-        print(id)
+    def get(self, request, pk = None, *args, **kwargs):
+        id = pk or request.query_params.get('id')
         if id is None:
+            print('here')
             dispensing = Dispensing.objects.all()
-            serilizer = DispensingSerializers(data=dispensing)
-            return Response(serilizer.data, status=200)
+            serilizer = DispensingSerializers(dispensing, many=True)
+            
+            return Response(data=serilizer.data, status=200)
         else:
             dispensing = Dispensing.objects.filter(id=request.data.id)
             if len(dispensing) == 0:
-                return Response("no item with this data", status=404)
+                return Response(data="no item with this data", status=404)
             else:
                 serilizer = DispensingSerializers(data=dispensing)
-                return Response(serilizer.data, status=200)
+                return Response(data=serilizer.data, status=200)
+
 
     def post(self, request):
         total_price = 0
