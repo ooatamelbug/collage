@@ -9,8 +9,7 @@ class ClassesSerializers(serializers.ModelSerializer):
 
 
 class DrugSerializers(serializers.ModelSerializer):
-    store = serializers.StringRelatedField(many=True)
     class Meta:
         model= Drug
         fields= '__all__'
-        extra_fields = ['store']
+      

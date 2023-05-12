@@ -8,8 +8,7 @@ class StockSerializers(serializers.ModelSerializer):
 
 
 class StoreStockSerializers(serializers.ModelSerializer):
-    drug: serializers.CharField(source="drug_stock_relation.en_brand_name")
     class Meta:
         model= StoreStock
         fields= '__all__'
-        extra_fields= ['drug']
+        depth= 1

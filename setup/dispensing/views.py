@@ -7,6 +7,7 @@ from stock.models import Stock, StoreStock
 # from django.contrib.auth.models import User
 from .serializers import DispensingSerializers, SoldDrugSerializers, CreateDispensingSerializers, CreateSoldDrugSerializers
 from stock.serializers import StoreStockSerializers
+from django.forms.models import model_to_dict
 # Create your views here.
 
 
@@ -74,3 +75,37 @@ class DispensingApi(APIView):
                         print('d')
                     continue
             return Response(data=validate.data, status=201)
+
+
+class Sales(APIView):
+    permission_classes = [IsAuthenticated]
+    http_method_names = ['post', 'get']
+
+    def get(self, request):
+        userid = request.query_params['user_id'] 
+        storeid = request.query_params['store_id']
+        to_date = request.query_params.get('to', None)
+        from_date = request.query_params.get('from', None)
+        date = request.query_params['date']
+        total = 0
+        amount = 0
+        if (date is not None) and (from_date is None) and (to_date is None):
+            total = Dispensing.objects.filter(
+                user_id=userid, store_id=storeid, created_at__contains=date).count()
+
+            dispens = Dispensing.objects.filter(
+                user_id=userid, store_id=storeid, created_at__contains=date)
+            serizler = DispensingSerializers(dispens, many=True)
+            for data in serizler.data:
+                amount += data['total_price']
+        elif (from_date is not None) and (to_date is not None) and (date is None):
+            total = Dispensing.objects.filter(
+                user_id=userid, store_id=storeid, created_at__range=[from_date, to_date]).count()
+
+            dispens = Dispensing.objects.filter(
+                user_id=userid, store_id=storeid, create_at__range=[from_date, to_date])
+            serizler = DispensingSerializers(dispens, many=True)
+            for data in serizler.data:
+                amount += data['total_price']
+
+        return Response(data={"total_operation": total, "total_amount": amount}, status=200)
