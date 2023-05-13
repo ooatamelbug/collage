@@ -3,7 +3,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
-from .models import Drug
+from .models import Drug, Classes
 # from django.contrib.auth.models import User
 from .serializers import ClassesSerializers, DrugSerializers
 from responsibilities import serializers, models
@@ -14,7 +14,12 @@ from stock import models, serializers
 class ClassesApi(APIView):
     permission_classes = [IsAuthenticated]
 
-    def createClasses(request):
+    def get(self, request):
+        classes = Classes.objects.all()
+        serializerclasses = ClassesSerializers(classes, many= True)
+        return Response(data=serializerclasses.data, status=200)
+
+    def post(request):
         class_name = request.data.class_name
         serializer = ClassesSerializers(data={class_name})
         if serializer.is_valid():
