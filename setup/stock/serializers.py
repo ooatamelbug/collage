@@ -12,3 +12,9 @@ class StoreStockSerializers(serializers.ModelSerializer):
         model= StoreStock
         fields= '__all__'
         depth= 1
+
+
+class StoreStockSerializersLite(serializers.ModelSerializer):
+    class Meta:
+        model= StoreStock
+        fields= '__all__'

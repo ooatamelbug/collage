@@ -21,6 +21,7 @@ from drug import urls as drugModule
 from dispensing import urls as dispensingModule
 from stock import urls as stockModule
 from storerequest import urls as orderModule
+from supplier import urls as supplierModule
 
 
 urlpatterns = [
@@ -31,4 +32,5 @@ urlpatterns = [
     path('api/dispensing/', include(dispensingModule)), 
     path('api/stock/', include(stockModule)),
     path('api/order/', include(orderModule)),
+    path('api/supplier/', include(supplierModule)),
 ]
