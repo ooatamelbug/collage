@@ -46,17 +46,19 @@ class DrugApi(APIView):
             return Response(data={"message": "not found"}, status=401)
 
     def post(self, request):
-        key = request.data.get('key')
-        value = request.data.get('value')
-        if key == 'en_brand_name':
-            value = value.upper()
-            data = Drug.objects.filter(en_brand_name__contains=value)
-        elif key == 'chemical_name':
-            data = Drug.objects.filter(chemical_name__contains=value)
-        elif key == 'national_code':
-            data = Drug.objects.filter(national_code__contains=value)
-        elif key == 'class_id':
-            data = Drug.objects.filter(class_id=value)
+        en_brand_name = request.data.get('en_brand_name')
+        national_code = request.data.get('national_code')
+        chemical_name = request.data.get('chemical_name')
+        class_id = request.data.get('class_id')
+        if en_brand_name is not None:
+            en_brand_name = en_brand_name.upper()
+            data = Drug.objects.filter(en_brand_name__contains=en_brand_name)
+        elif chemical_name is not None:
+            data = Drug.objects.filter(chemical_name__contains=chemical_name)
+        elif national_code is not None:
+            data = Drug.objects.filter(national_code__contains=national_code)
+        elif class_id is not None:
+            data = Drug.objects.filter(class_id=class_id)
         else:
             data = Drug.objects.all()
 
