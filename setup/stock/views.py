@@ -16,6 +16,7 @@ class StockApi(APIView):
 
     def get(self, request, *args, **kwargs):
         storeStock = StoreStock.objects.filter(store_quantity__lte=2)
+        print(storeStock)
         serilizer = StoreStockSerializers(storeStock)
         if len(storeStock) == 0:
             return Response(data="no item with this data", status=404)

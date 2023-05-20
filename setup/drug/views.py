@@ -49,8 +49,7 @@ class DrugApi(APIView):
         key = request.data.get('key')
         value = request.data.get('value')
         if key == 'en_brand_name':
-            value.upper()
-        if key == 'en_brand_name':
+            value = value.upper()
             data = Drug.objects.filter(en_brand_name__contains=value)
         elif key == 'chemical_name':
             data = Drug.objects.filter(chemical_name__contains=value)
