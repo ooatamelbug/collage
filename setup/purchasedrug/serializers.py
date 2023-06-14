@@ -3,11 +3,10 @@ from .models import PurchaseDrug
 
 
 class PurchaseDrugSerializers(serializers.ModelSerializer):
-    drug = serializers.CharField(readOnly=True, source="drugsdetails_drug.en_brand_name")
     class Meta:
         model = PurchaseDrug
         fields = '__all__'
-
+        depth = 1
 
 class CreatePurchaseDrugSerializers(serializers.ModelSerializer):
     class Meta:

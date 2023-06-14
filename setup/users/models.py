@@ -7,7 +7,7 @@ class User(AbstractUser):
     first_name= models.CharField(max_length=15)
     last_name= models.CharField(max_length=15)
     middle_name= models.CharField(max_length=15)
-    login_type= models.CharField(max_length=15) 
+    login_type = models.CharField(max_length=15) # TYPE
     user_status= models.BooleanField(default=True)
     login_id=models.CharField(max_length=15,null=True)
     created_at=models.DateTimeField(auto_now_add=True)

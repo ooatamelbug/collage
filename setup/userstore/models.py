@@ -5,11 +5,11 @@ from store.models import Store
 
 
 class UserStore(models.Model):
-    id = models.IntegerField(primary_key=True)
+    id = models.AutoField(primary_key=True)
     user_id = models.ForeignKey(
-        User, to_field="id", related_name='user_userstore', on_delete=models.CASCADE)
+        User,  on_delete=models.CASCADE, related_name='user_store')
     store_id = models.ForeignKey(
-        Store, to_field="id", related_name='store_userstore', on_delete=models.CASCADE)
+        Store,  on_delete=models.CASCADE ,related_name='store_user')
     status = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)

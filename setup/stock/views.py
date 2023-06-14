@@ -27,16 +27,14 @@ class StoreStockApi(APIView):
     permission_classes = [IsAuthenticated]
     http_method_names = ['post', 'get']
 
-    def get(self, request, *args, **kwargs):
-        id = request.query_params.get('id')
+    def post(self, request, *args, **kwargs):
+        drug_id = request.data.get('drug_id')
+        store_id = request.data.get('store_id')
         try:
-            storeStock = StoreStock.objects.get(pk=id)
-            serilizer = StoreStockSerializersLite(storeStock)
-            data = serilizer.data
             d = collections.OrderedDict()
             
             inother = StoreStock.objects.filter(
-                drug_id=data['drug_id'], store_quantity__gt=0).exclude(store_id=data['store_id'])
+                drug_id=drug_id, store_quantity__gt=0).exclude(store_id=store_id)
             serilizerd = StoreStockSerializers(inother, many=True)
             return Response(data=serilizerd.data, status=200)
         except ObjectDoesNotExist:

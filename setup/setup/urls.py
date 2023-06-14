@@ -22,7 +22,10 @@ from dispensing import urls as dispensingModule
 from stock import urls as stockModule
 from storerequest import urls as orderModule
 from supplier import urls as supplierModule
-
+from purchaseorder import urls as purchaseorderModule
+from storetransfer import urls as storetransferModule
+from userstore import urls as userstoreModule
+from store import urls as storeModule
 
 urlpatterns = [
     path('admin/', admin.site.urls),
@@ -33,4 +36,8 @@ urlpatterns = [
     path('api/stock/', include(stockModule)),
     path('api/order/', include(orderModule)),
     path('api/supplier/', include(supplierModule)),
+    path('api/storetransfer/', include(storetransferModule)),
+    path('api/purchaseorder/', include(purchaseorderModule)),
+    path('api/userstore/', include(userstoreModule)),
+    path('api/store/', include(storeModule)),
 ]

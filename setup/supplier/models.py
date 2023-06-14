@@ -4,11 +4,11 @@ from django.db import models
 class Supplier(models.Model):
     id=models.AutoField(primary_key=True)
     supplier_first_name=models.CharField(max_length=25)
-    supplier_middle_name=models.CharField(max_length=25)
+    supplier_middle_name=models.CharField(max_length=25, null=True)
     supplier_last_name=models.CharField(max_length=25)
     supplier_address=models.CharField(max_length=25)
     supplier_aphone1=models.CharField(max_length=25)
-    supplier_aphone2=models.CharField(max_length=25)
+    supplier_aphone2=models.CharField(max_length=25, null=True)
     created_at=models.DateTimeField(auto_now_add=True)
     updated_at=models.DateTimeField(auto_now=True)
 

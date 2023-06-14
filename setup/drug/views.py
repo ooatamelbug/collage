@@ -16,16 +16,48 @@ class ClassesApi(APIView):
 
     def get(self, request):
         classes = Classes.objects.all()
-        serializerclasses = ClassesSerializers(classes, many= True)
+        serializerclasses = ClassesSerializers(classes, many=True)
         return Response(data=serializerclasses.data, status=200)
 
-    def post(request):
+    def post(self,request):
         class_name = request.data.class_name
         serializer = ClassesSerializers(data={class_name})
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
+
+    def post(self,request):
+        className = request.data.get('className')
+        classFound = Classes.objects.get(class_name__eq=className)
+        if len(classFound) > 0:
+            return Response(data={"message": "exist"}, status=400)
+        else:
+            data = {"class_name":  className}
+            serlizer = ClassesSerializers(data=data)
+            if serlizer.is_valid():
+                serlizer.save()
+                return Response(data=serlizer.data, status=201)
+
+    def put(self, request, pk, format=None):
+        className = request.data.get('className')
+        classFound = Classes.objects.get(id=pk)
+        if len(classFound) < 0:
+            return Response(data={"message": "NOT exist"}, status=404)
+        else:
+            data = {"class_name":  className}
+            serlizer = ClassesSerializers(instance=classFound, data=data)
+            if serlizer.is_valid():
+                serlizer.save()
+                return Response(data=serlizer.data, status=201)
+
+    def delete(self, request, pk, format=None):
+        classFound = Classes.objects.get(id=pk)
+        if len(classFound) < 0:
+            return Response(data={"message": "NOT exist"}, status=404)
+        else:
+            classFound.delete()
+            return Response(data="", status=200)
 
 
 class DrugApi(APIView):
@@ -64,3 +96,19 @@ class DrugApi(APIView):
 
         serializers = DrugSerializers(data, many=True)
         return Response(data=serializers.data, status=200)
+
+    def post(self, request):
+        serializer = DrugSerializers(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(data={"message": "data saved"}, status=200)
+
+    def put(self, request, pk, format = None):
+        drugFound = Drug.objects.get(id=pk)
+        if len(drugFound) < 0:
+            return Response(data={"message": "NOT exist"}, status=404)
+        else:
+            serlizer = DrugSerializers(instance=drugFound, data=request.data)
+            if serlizer.is_valid():
+                serlizer.save()
+                return Response(data=serlizer.data, status=201)

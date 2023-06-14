@@ -22,3 +22,22 @@ def getOneUser(request):
     serializerUserResponsibilities = serializers.UserResponsibilitiesSerializers(userRes, many=True)
     data = { 'user': serializerUser.data, 'store': store.data, 'responsibilities': serializerUserResponsibilities.data }
     return Response(data=data, status=200)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def createUser(request):
+    user = User.objects.filter(username=request.data.get('username'))
+    if len(user) >  0:
+        return Response(data={"message": "exist"},status=400)
+    else:
+        serializerUser = UserSerializers(data=request.data)
+        serializerUser.is_valid(raise_exception=True)
+        serializerUser.save()
+        return Response(data=serializerUser.data, status=201)
+   
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def getall(request):
+    data =  User.objects.all()
+    serializerUser = UserSerializers(data, many=True)
+    return Response(data=serializerUser.data, status=200)
