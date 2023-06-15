@@ -30,6 +30,7 @@ def createUser(request):
     if len(user) >  0:
         return Response(data={"message": "exist"},status=400)
     else:
+        request.data['email'] = request.data.get('username')
         serializerUser = UserSerializers(data=request.data)
         serializerUser.is_valid(raise_exception=True)
         serializerUser.save()

@@ -40,7 +40,6 @@ class StockTransferAPI(APIView):
                 request_id=ser.data['request_id']['id'])
             transfer = None
             if len(stockTransfer) <= 0:
-                print('here3')
                 data = {
                     "request_id": ser.data['request_id']['id'],
                     "transfer_status": False,
@@ -52,22 +51,22 @@ class StockTransferAPI(APIView):
                 requestDrugSerializers.save()
                 transfer = requestDrugSerializers.data
             else:
-                print('here4')
                 requestDrugSerializers = CreateStockTransferSerializers(
-                    stockTransfer)
-                transfer = requestDrugSerializers.data
+                    stockTransfer, many=True)
+                transfer = requestDrugSerializers.data[0]
             # here transfare drug from to
             errorArray = []
             for transferDrug in request.data.get('transferArray'):
-                print('here5')
                 publisher = models.StoreStock.objects.filter(
                     store_id=transferDrug['from_stock'], drug_id=transferDrug['drug_id'])
                 reciver = models.StoreStock.objects.filter(
                     store_id=transferDrug['to_stock'], drug_id=transferDrug['drug_id'])
 
-                serpublisher = serializers.StoreStockSerializers(publisher,many= True)
-                serreciver = serializers.StoreStockSerializers(reciver,many= True)
-                print(serreciver.data[0])
+                serpublisher = serializers.StoreStockSerializers(
+                    publisher, many=True)
+                serreciver = serializers.StoreStockSerializers(
+                    reciver, many=True)
+                # print(serreciver.data[0])
                 drugtransfered = TransferDrug.objects.filter(
                     transfer_id=transfer['id'], drug_id=transferDrug['drug_id'], transfer_drug_status='REQ', to_stock_id=transferDrug['to_stock'])
                 if len(drugtransfered) > 0:
@@ -81,41 +80,45 @@ class StockTransferAPI(APIView):
                         "transfer_drug_quantity": transferDrug['quantity'],
                         "transfer_drug_status": 'REQ',
                     }
-                    print(datatranfer)
+                    # print(datatranfer)
                     create = CreateTransferDrugSerializers(data=datatranfer)
                     if create.is_valid() == False:
                         errorArray.append(transferDrug)
-                    
+
                     create.save()
                     # check if this store have enough
-                    print('here6')
                     enoughDrug = models.StoreStock.objects.filter(
                         store_id=transferDrug['from_stock'], drug_id=transferDrug['drug_id'], store_quantity__gte=transferDrug['quantity'])
                     if len(enoughDrug) < 0:
                         errorArray.append(transferDrug)
                     else:
                         updatefrom = serializers.StoreStockSerializers(
-                            instance=enoughDrug[0], data={"store_quantity": serpublisher.data[0]['store_quantity'] -transferDrug['quantity']})
+                            instance=enoughDrug[0], data={"store_quantity": serpublisher.data[0]['store_quantity'] - transferDrug['quantity']})
                         findAnthor = models.StoreStock.objects.filter(
                             store_id=transferDrug['to_stock'], drug_id=transferDrug['drug_id'])
                         if len(findAnthor) > 0:
                             updateTo = serializers.StoreStockSerializers(
-                                instance=findAnthor[0], data={"store_quantity": serreciver.data[0]['store_quantity'] +transferDrug['quantity']})
+                                instance=findAnthor[0], data={"store_quantity": serreciver.data[0]['store_quantity'] + transferDrug['quantity']})
                             updatefrom.is_valid(raise_exception=True)
                             updateTo.is_valid(raise_exception=True)
                             updatefrom.save()
                             updateTo.save()
-                            print('here7')
                             # update TransferDrugSerializers
                             updatetransfer = TransferDrug.objects.get(
                                 pk=create.data['id'])
-                            updatetransfer = CreateTransferDrugSerializers(instance=updatetransfer, data={
-                                "transfer_drug_status": 'CLS'})
+                            updatetransfer = TransferDrugSerializers(instance=updatetransfer, data={
+                                "transfer_drug_status": 'CLS', "transfer_drug_quantity": create.data['transfer_drug_quantity']})
                             updatetransfer.is_valid(raise_exception=True)
-                            print(create.data)
                             updatetransfer.save()
+
+                        # update request
+                        serrequestDrug = RequestDrugSerializers(
+                            instance=requestDrug, data={"request_status": "CLS", "request_drug_quantity": ser.data['request_drug_quantity']})
+                        serrequestDrug.is_valid(raise_exception=True)
+                        serrequestDrug.save()
+
                         continue
                     # update store
                     # update TransferDrugSerializers
 
-                return Response(data={"error": errorArray}, status=200)
+            return Response(data={"error": errorArray}, status=200)

@@ -19,7 +19,7 @@ class ClassesApi(APIView):
         serializerclasses = ClassesSerializers(classes, many=True)
         return Response(data=serializerclasses.data, status=200)
 
-    def post(self,request):
+    def post(self, request):
         serializer = ClassesSerializers(data=request.data)
         if serializer.is_valid(raise_exception=True):
             serializer.save()
@@ -30,9 +30,9 @@ class ClassesApi(APIView):
 class ClassesUCDApi(APIView):
     permission_classes = [IsAuthenticated]
 
-    def post(self,request):
+    def post(self, request):
         className = request.data.get('className')
-        classFound = Classes.objects.filter(class_name__eq=className)
+        classFound = Classes.objects.filter(class_name=className)
         if len(classFound) > 0:
             return Response(data={"message": "exist"}, status=400)
         else:
@@ -44,15 +44,15 @@ class ClassesUCDApi(APIView):
 
     def put(self, request, pk, format=None):
         className = request.data.get('className')
-        classFound = Classes.objects.get(pk=pk)
+        classFound = Classes.objects.filter(id=pk)
         if len(classFound) < 0:
             return Response(data={"message": "NOT exist"}, status=404)
         else:
             data = {"class_name":  className}
-            serlizer = ClassesSerializers(instance=classFound, data=data)
-            if serlizer.is_valid():
-                serlizer.save()
-                return Response(data=serlizer.data, status=201)
+            serlizer = ClassesSerializers(instance=classFound[0], data=data)
+            serlizer.is_valid(raise_exception=True)
+            serlizer.save()
+            return Response(data=serlizer.data, status=201)
 
     def delete(self, request, pk, format=None):
         classFound = Classes.objects.get(id=pk)
@@ -110,12 +110,13 @@ class DrugUACApi(APIView):
         serializer.save()
         return Response(data={"message": "data saved"}, status=200)
 
-    def put(self, request, pk, format = None):
+    def put(self, request, pk, format=None):
         drugFound = Drug.objects.filter(id=pk)
         if len(drugFound) < 0:
             return Response(data={"message": "NOT exist"}, status=404)
         else:
-            serlizer = DrugSerializers(instance=drugFound, data=request.data)
-            if serlizer.is_valid(raise_exception=True):
-                serlizer.save()
-                return Response(data=serlizer.data, status=201)
+            serlizer = DrugSerializers(
+                instance=drugFound[0], data=request.data,  partial=True)
+            serlizer.is_valid(raise_exception=True)
+            serlizer.save()
+            return Response(data=serlizer.data, status=201)
