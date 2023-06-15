@@ -20,16 +20,19 @@ class ClassesApi(APIView):
         return Response(data=serializerclasses.data, status=200)
 
     def post(self,request):
-        class_name = request.data.class_name
-        serializer = ClassesSerializers(data={class_name})
-        if serializer.is_valid():
+        serializer = ClassesSerializers(data=request.data)
+        if serializer.is_valid(raise_exception=True):
             serializer.save()
             return Response(serializer.data, status=201)
         return Response(serializer.errors, status=400)
 
+
+class ClassesUCDApi(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self,request):
         className = request.data.get('className')
-        classFound = Classes.objects.get(class_name__eq=className)
+        classFound = Classes.objects.filter(class_name__eq=className)
         if len(classFound) > 0:
             return Response(data={"message": "exist"}, status=400)
         else:
@@ -41,7 +44,7 @@ class ClassesApi(APIView):
 
     def put(self, request, pk, format=None):
         className = request.data.get('className')
-        classFound = Classes.objects.get(id=pk)
+        classFound = Classes.objects.get(pk=pk)
         if len(classFound) < 0:
             return Response(data={"message": "NOT exist"}, status=404)
         else:
@@ -97,6 +100,10 @@ class DrugApi(APIView):
         serializers = DrugSerializers(data, many=True)
         return Response(data=serializers.data, status=200)
 
+
+class DrugUACApi(APIView):
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         serializer = DrugSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)
@@ -104,11 +111,11 @@ class DrugApi(APIView):
         return Response(data={"message": "data saved"}, status=200)
 
     def put(self, request, pk, format = None):
-        drugFound = Drug.objects.get(id=pk)
+        drugFound = Drug.objects.filter(id=pk)
         if len(drugFound) < 0:
             return Response(data={"message": "NOT exist"}, status=404)
         else:
             serlizer = DrugSerializers(instance=drugFound, data=request.data)
-            if serlizer.is_valid():
+            if serlizer.is_valid(raise_exception=True):
                 serlizer.save()
                 return Response(data=serlizer.data, status=201)

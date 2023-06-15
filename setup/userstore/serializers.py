@@ -6,4 +6,11 @@ class UserStoreSerializers(serializers.ModelSerializer):
     class Meta:
         model= UserStore
         fields= '__all__'
+        depth=1
 
+
+
+class CreateUserStoreSerializers(serializers.ModelSerializer):
+    class Meta:
+        model= UserStore
+        fields= '__all__'

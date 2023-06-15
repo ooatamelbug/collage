@@ -3,12 +3,12 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import PurchaseOrder
-from purchasedrug.models import PurchaseOrder
+from purchasedrug.models import PurchaseOrder, PurchaseDrug
 from stock.models import Stock, StoreStock
 from .serializers import CreatePurchaseOrderSerializers, PurchaseOrderSerializers
 from purchasedrug.serializers import CreatePurchaseDrugSerializers, PurchaseDrugSerializers
 from stock.serializers import StockSerializers
-
+from storerequest import models, serializers
 # Create your views here.
 
 
@@ -40,7 +40,8 @@ class PurchaseOrderApi(APIView):
         }
         validate = CreatePurchaseOrderSerializers(data=dataPurchase)
         if validate.is_valid():
-            for drug in request.data.details:
+            validate.save()
+            for drug in request.data.get('details'):
                 drugdetails = {
                     "order_quantity": drug.order_quantity,
                     "drug_id": drug.drug_id,
@@ -48,11 +49,18 @@ class PurchaseOrderApi(APIView):
                 }
                 validatedrug = CreatePurchaseDrugSerializers(data=drugdetails)
                 if validatedrug.is_valid():
+                    validatedrug.save()
+                    requestDrug = models.RequestDrug.objects.get(
+                        pk=drug.request_drug_num)
+                    serilzerRequest = serializers.CreateRequestDrugSerializers(
+                        instance=requestDrug, data={"request_status": "CLS"})
+                    serilzerRequest.is_valid(raise_exception=True)
+                    serilzerRequest.save()
                     continue
             return Response(data=validate.data, status=201)
 
     def put(self, request, pk):
-        dataPurchase = PurchaseOrder.objects.get(id=pk)
+        dataPurchase = PurchaseOrder.objects.get(pk=pk)
         updatedata = {
             "invoice_number": request.data.get('invoice_number'),
             "invoice_atm": request.data.get('invoice_atm'),
@@ -64,7 +72,7 @@ class PurchaseOrderApi(APIView):
         serlizerPurchaseOrder.save()
         #
         for drug in request.data.details:
-            dataPurchasedetails = PurchaseOrder.objects.get(id=drug.id)
+            dataPurchasedetails = PurchaseDrug.objects.get(pk=drug.id)
             detailsdata = {
                 "invoice_quantity": drug.invoice_quantity,
                 "drug_cost": drug.drug_cost
@@ -73,7 +81,7 @@ class PurchaseOrderApi(APIView):
                 instance=dataPurchasedetails, data=detailsdata)
             serlizerPurchaseDrug.is_valid(raise_exception=True)
             serlizerPurchaseDrug.save()
-            drugInStore = Stock.objects.get(
+            drugInStore = Stock.objects.filter(
                 drug_id=serlizerPurchaseDrug.data['drug_id'])
             if len(drugInStore) > 0:
                 data = {
