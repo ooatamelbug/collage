@@ -13,19 +13,20 @@ class CreateTransferDrugSerializers(serializers.ModelSerializer):
         model = TransferDrug
         fields = '__all__'
 
-
-class StockTransferSerializers(serializers.ModelSerializer):
-    transferDrug = serializers.StringRelatedField(many=True)
-
-    class Meta:
-        model = StockTransfer
-        fields = '__all__'
-        extra_fields = ['transferDrug']
-        depth = 1
-
-
 class TransferDrugSerializers(serializers.ModelSerializer):
     class Meta:
         model = TransferDrug
         fields = '__all__'
         depth = 1
+
+
+class StockTransferSerializers(serializers.ModelSerializer):
+    stock_transfer_transfer_drug = TransferDrugSerializers(many=True)
+
+    class Meta:
+        model = StockTransfer
+        fields = '__all__'
+        extra_fields = ['stock_transfer_transfer_drug']
+        depth = 1
+
+
