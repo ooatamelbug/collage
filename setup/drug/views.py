@@ -30,6 +30,12 @@ class ClassesApi(APIView):
 class ClassesUCDApi(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, pk):
+        data= Classes.objects.get(pk=pk)
+        serializer = ClassesSerializers(data)
+        return  Response(data=serializer.data)
+    
+
     def post(self, request):
         className = request.data.get('className')
         classFound = Classes.objects.filter(class_name=className)
@@ -38,9 +44,9 @@ class ClassesUCDApi(APIView):
         else:
             data = {"class_name":  className}
             serlizer = ClassesSerializers(data=data)
-            if serlizer.is_valid():
-                serlizer.save()
-                return Response(data=serlizer.data, status=201)
+            serlizer.is_valid(raise_exception=True)
+            serlizer.save()
+            return Response(data=serlizer.data, status=201)
 
     def put(self, request, pk, format=None):
         className = request.data.get('className')
@@ -104,6 +110,11 @@ class DrugApi(APIView):
 class DrugUACApi(APIView):
     permission_classes = [IsAuthenticated]
 
+    def get(self, request, pk):
+        data= Drug.objects.get(pk=pk)
+        serializer = DrugSerializers(data)
+        return  Response(data=serializer.data)
+    
     def post(self, request):
         serializer = DrugSerializers(data=request.data)
         serializer.is_valid(raise_exception=True)

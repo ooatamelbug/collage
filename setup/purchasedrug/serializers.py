@@ -11,4 +11,4 @@ class PurchaseDrugSerializers(serializers.ModelSerializer):
 class CreatePurchaseDrugSerializers(serializers.ModelSerializer):
     class Meta:
         model = PurchaseDrug
-        fields = ('order_quantity', 'invoice_quantity', 'drug_cost', 'drug_id', 'order_id')
+        fields = '__all__'

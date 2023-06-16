@@ -1,16 +1,17 @@
 from rest_framework import serializers
 from .models import PurchaseOrder
+from purchasedrug.serializers import PurchaseDrugSerializers
 
 
 class PurchaseOrderSerializers(serializers.ModelSerializer):
-    details = serializers.StringRelatedField(many=True)
+    order_drug = PurchaseDrugSerializers(many=True)
     class Meta:
         model = PurchaseOrder
         fields = '__all__'
-        extra_fields = ['details']
+        extra_fields = ['order_drug']
         depth= 1
 
 class CreatePurchaseOrderSerializers(serializers.ModelSerializer):
     class Meta:
         model = PurchaseOrder
-        fields = ('order_desc', 'order_status', 'invoice_number', 'invoice_status', 'invoice_atm', 'supplier_id')
+        fields ='__all__'
