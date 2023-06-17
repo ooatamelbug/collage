@@ -21,7 +21,7 @@ class DrugOrderRequest(APIView):
 
 class OrderAPI(APIView):
     permission_classes = [IsAuthenticated]
-    http_method_names = ['post', 'get']
+    http_method_names = ['post', 'get', 'put']
 
     def get(self, request):
         print(self, 'self')
@@ -66,3 +66,14 @@ class OrderAPI(APIView):
                     #  decrease  quantity
                     continue
             return Response(data=validate.data, status=201)
+
+    def put(self, request, pk=None):
+            drugorder = RequestDrug.objects.get(pk=pk)
+            if drugorder == None:
+                return Response(data={"erro": "not"}, status=404)
+            else:
+                ser = CreateRequestDrugSerializers(
+                    instance=drugorder, data=request.data, partial=True)
+                ser.is_valid(raise_exception=True)
+                ser.save()
+                return Response(data="updated", status=200)   
