@@ -3,7 +3,7 @@ from rest_framework.views import APIView
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import UserStore
-from .serializers import UserStoreSerializers
+from .serializers import UserStoreSerializers, CreateUserStoreSerializers
 from users.models import User
 from store.models import Store
 # Create your views here.
@@ -18,14 +18,13 @@ class UserStoreAPI(APIView):
         return Response(data=serilzer.data, status=200)
     
     def post(self, request):
-        # data = User.objects.filter(id=request.data.get('user_id'))
-        # store = Store.objects.filter(id=request.data.get('store_id'))
-        # if len(data) > 0 and  len(store) > 0:
-        serStore = UserStoreSerializers(data=request.data)
-        serStore.is_valid()
-        serStore.save()
-        print(serStore.data)
+        data = User.objects.filter(id=request.data.get('user_id'))
+        store = Store.objects.filter(id=request.data.get('store_id'))
+        if len(data) > 0 and  len(store) > 0:
+            serStore = CreateUserStoreSerializers(data=request.data)
+            serStore.is_valid(raise_exception=True)
+            serStore.save()
             
-        return Response(data=serStore.data, status=200)
-        # else: 
-        #     return Response(data={"message": "no"}, status=404)
+            return Response(data=serStore.data, status=200)
+        else: 
+            return Response(data={"message": "no"}, status=404)
