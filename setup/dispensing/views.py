@@ -4,6 +4,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from .models import SoldDrug, Dispensing
 from stock.models import Stock, StoreStock
+from stock.serializers import StockSerializers
 # from django.contrib.auth.models import User
 from .serializers import DispensingSerializers, SoldDrugSerializers, CreateDispensingSerializers, CreateSoldDrugSerializers
 from stock.serializers import StoreStockSerializers
@@ -35,11 +36,13 @@ class DispensingApi(APIView):
         total_price = 0
         for index, drug in enumerate(request.data.get('drugs')):
             drugInStock = Stock.objects.filter(durg_id=drug['id'])
+            serdrugInStock = StockSerializers(drugInStock, many=True)
             drugInStockAvailable = StoreStock.objects.filter(
                 drug_id=drug['id'], store_id=request.data.get('store'))
-            if drugInStockAvailable[0].store_quantity < drug['quantity']:
+            ser = StoreStockSerializers(drugInStockAvailable, many=True)
+            if ser.data[0]['store_quantity'] < drug['quantity']:
                 return Response("some items is not Available", status=404)
-            total_price += drugInStock[0].const_price * drug['quantity']
+            total_price += serdrugInStock.data[0]['const_price'] * drug['quantity']
 
         dataSold = {
             "user_id": request.user.id,
@@ -51,14 +54,16 @@ class DispensingApi(APIView):
             validate.save()
             for index, drug in enumerate(request.data.get('drugs')):
                 drugInStock = Stock.objects.filter(durg_id=drug['id'])
+                serdrugInStock = StockSerializers(drugInStock, many=True)
                 drugInStockAvailable = StoreStock.objects.filter(
                     drug_id=drug['id'], store_id=request.data.get('store'))
+                ser = StoreStockSerializers(drugInStockAvailable, many=True)
                 drugdetails = {
                     "sold_quantity": drug['quantity'],
                     "drug_id": drug['id'],
-                    "store_stock_id": drugInStockAvailable[0].id,
+                    "store_stock_id": ser.data[0]['id'],
                     "dispensing_id": validate.data['id'],
-                    "sell_price": drugInStock[0].const_price,
+                    "sell_price": serdrugInStock.data[0]['const_price'],
                 }
                 validatedrug = CreateSoldDrugSerializers(data=drugdetails)
                 if validatedrug.is_valid(raise_exception=True):
@@ -66,7 +71,7 @@ class DispensingApi(APIView):
                     #  decrease  quantity
                     print(drugInStockAvailable)
                     data = {
-                        "store_quantity": drugInStockAvailable[0].store_quantity - drug['quantity'],
+                        "store_quantity": ser.data[0]['store_quantity'] - drug['quantity'],
                     }
                     serilizerStock = StoreStockSerializers(
                         drugInStockAvailable[0], data, partial=True)
@@ -82,7 +87,7 @@ class Sales(APIView):
     http_method_names = ['post', 'get']
 
     def get(self, request):
-        userid = request.query_params['user_id'] 
+        userid = request.query_params['user_id']
         storeid = request.query_params['store_id']
         to_date = request.query_params.get('to', None)
         from_date = request.query_params.get('from', None)
